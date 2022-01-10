@@ -22,12 +22,21 @@ Neat::Neat(unsigned int _inputSize, unsigned int _outputSize, unsigned int _numb
 	nodeGeneList(NeatList<NodeGene>()),
 	connectionGeneList(NeatList<ConnectionGene>()),
 	genomeList(NeatList<std::shared_ptr<Genome>>()),
-	speciesList(NeatList<std::shared_ptr<Species>>()),
-	mySharedPointer(nullptr)
+	speciesList(NeatList<std::shared_ptr<Species>>())
 {
 	fillGenomeList();
 	mutateGenomes();
 	speciate();
+
+	/*for (const NodeGene& G : nodeGeneList)
+	{
+		std::cout << G << "\n";
+	}
+
+	for (const ConnectionGene& C : connectionGeneList)
+	{
+		std::cout << C << "\n";
+	}*/
 }
 
 ConnectionGene Neat::createOrGetNewConnectionGene(unsigned int from, unsigned int to)
@@ -193,6 +202,11 @@ void Neat::mutateAddConnection(std::shared_ptr<Genome> _genome)
 
 void Neat::mutateAddNode(std::shared_ptr<Genome> _genome)
 {
+	if (_genome->getConnectionGeneList().size() == 0)
+	{
+		return;
+	}
+
 	ConnectionGene& midGene = _genome->getConnectionGeneList().getRandomObject();
 
 	double newLayer = (nodeGeneList[midGene.getFrom()].getLayer() + nodeGeneList[midGene.getTo()].getLayer()) / 2;
@@ -259,6 +273,8 @@ void Neat::speciate()
 		}
 		
 	}
+
+	std::cout << speciesList.size() << "\n";
 }
 
 bool Neat::sameSpecies(std::shared_ptr<Genome> A, std::shared_ptr<Genome> B)
@@ -324,6 +340,11 @@ bool Neat::sameSpecies(std::shared_ptr<Genome> A, std::shared_ptr<Genome> B)
 	if (N <= 20) 
 	{
 		N = 1;
+	}
+
+	if (S == 0) 
+	{
+		S = 1;
 	}
 
 	double num = (C1 * D / N) + (C2 * E / N) + (C3 * W / S);

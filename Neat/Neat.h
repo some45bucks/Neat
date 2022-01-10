@@ -32,25 +32,23 @@ private:
 	unsigned int outputSize;
 	unsigned int numberOfGenomes;
 
-	double GENOME_DISTANCE = 1;
+	double GENOME_DISTANCE = 7;
 	
 	double C1 = 1;
 	double C2 = 1;
 	double C3 = 1;
 
-	double MUTATE_ADJUST_WEIGHT_CHANCE = 1;
-	double MUTATE_RANDOM_WEIGHT_CHANCE = 1;
-	double MUTATE_ENABLE_DISABLE_CHANCE = 1;
-	double MUTATE_ADD_CONNECTION_CHANCE = 1;
-	double MUTATE_ADD_NODE_CHANCE = 1;
+	double MUTATE_ADJUST_WEIGHT_CHANCE = .05;
+	double MUTATE_RANDOM_WEIGHT_CHANCE = .05;
+	double MUTATE_ENABLE_DISABLE_CHANCE = .05;
+	double MUTATE_ADD_CONNECTION_CHANCE = .05;
+	double MUTATE_ADD_NODE_CHANCE = .05;
 
 	std::shared_ptr<NeatRandom> neatRandom;
 	NeatList<NodeGene> nodeGeneList;
 	NeatList<ConnectionGene> connectionGeneList;
 	NeatList<std::shared_ptr<Genome>> genomeList;
 	NeatList< std::shared_ptr<Species>> speciesList;
-
-	std::shared_ptr<Neat> mySharedPointer;
 
 	void mutateAdjustWeight(std::shared_ptr<Genome> _genome);
 	void mutateRandomWeight(std::shared_ptr<Genome> _genome);

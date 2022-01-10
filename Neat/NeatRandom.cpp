@@ -18,6 +18,10 @@ double NeatRandom::getRandomDouble(double lower, double upper)
 
 int NeatRandom::getRandomInt(int lower, int upper)
 {
+	if (lower == upper) 
+	{
+		return lower;
+	}
 	std::uniform_int_distribution<int> range = std::uniform_int_distribution<>(lower,upper);
 	return range(gen);
 }

@@ -55,7 +55,7 @@ void NeatListTest()
 
 void NeatTest() 
 {
-	Neat neat = Neat(3,4,100);
+	Neat neat = Neat(3,4,1000);
 }
 
 void tests() 

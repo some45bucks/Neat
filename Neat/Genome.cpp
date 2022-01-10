@@ -54,7 +54,7 @@ void Genome::setUpRandom(std::shared_ptr<NeatRandom> neatRandom)
 	connectionGeneList.setRandom(neatRandom);
 }
 
-double Genome::getAdjustedFitness()
+const double Genome::getAdjustedFitness()
 {
 	return fitness/species->size();
 }
@@ -62,10 +62,19 @@ double Genome::getAdjustedFitness()
 void Genome::sortByInnNum()
 {
 	connectionGeneList.sort([](ConnectionGene a, ConnectionGene b) {
-		return a.getInnNum() > b.getInnNum();
+		return a.getInnNum() < b.getInnNum();
 	});
 
 	nodeGeneList.sort([](NodeGene a, NodeGene b) {
-		return a.getInnNum() > b.getInnNum();
+		return a.getInnNum() < b.getInnNum();
 	});
+}
+
+void Genome::printLists()
+{
+	std::cout << *this << "\n";
+	nodeGeneList.print();
+	std::cout << "\n";
+	connectionGeneList.print();
+	std::cout << "\n";
 }

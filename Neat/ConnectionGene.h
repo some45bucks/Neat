@@ -1,4 +1,6 @@
 #pragma once
+#include <ostream>
+
 class ConnectionGene
 {
 public:
@@ -6,24 +8,30 @@ public:
 	ConnectionGene(unsigned int _inn, double _weight);
 	ConnectionGene(unsigned int _inn, double _weight, unsigned int _from, unsigned int _to);
 
-	unsigned int getInnNum() { return inn; }
+	unsigned int const getInnNum() { return inn; }
 	void setInnNum(unsigned int _inn) { inn = _inn; }
 
-	double getWeight() { return weight; }
+	const double getWeight() { return weight; }
 	void setWeight(double _weight) { weight = _weight; }
 
-	unsigned int getFrom() { return from; }
+	const unsigned int getFrom() { return from; }
 	void setFrom(unsigned int _from) { from = _from; }
 
-	unsigned int getTo() { return to; }
+	const unsigned int getTo() { return to; }
 	void setTo(unsigned int _to) { to = _to; }
 
-	bool getEnabled() { return enabled; }
+	const bool getEnabled() { return enabled; }
 	void toggleEnabled() { enabled = !enabled; }
 
-	bool isEqual(ConnectionGene other);
+	friend std::ostream& operator<<(std::ostream& strm, const ConnectionGene& a) {
+		return strm << "Connection Gene " << a.inn << "\n"
+			<< "  Weight: " << a.weight << "\n"
+			<< "  From: " << a.from << "\n"
+			<< "  To: " << a.to << "\n";
+	}
 
 private:
+	
 	unsigned int inn;
 	double weight;
 	unsigned int from;

@@ -6,6 +6,7 @@
 #include "NeatList.h"
 
 #include <iostream>
+#include <ostream>
 
 class Genome
 {
@@ -23,17 +24,24 @@ public:
 	NeatList<NodeGene>& getNodeGeneList() {return nodeGeneList;}
 
 	void setSpecies(std::shared_ptr<Species> _species) { species = _species; }
-	std::shared_ptr<Species> getSpecies() { return species; }
+	const std::shared_ptr<Species> getSpecies() { return species; }
 
 	void setFitness(double _fitness) { fitness = _fitness; }
-	double getFitness() { return fitness; }
-	double getAdjustedFitness();
+	const double getFitness() { return fitness; }
+	const double getAdjustedFitness();
 
-	unsigned int getId() { return id; }
+	const unsigned int getId() { return id; }
 
 	void setUpRandom(std::shared_ptr<NeatRandom> neatRandom);
 
 	void sortByInnNum();
+
+	void printLists();
+
+	friend std::ostream& operator<<(std::ostream& strm, const Genome& a) {
+		return strm << "Genome " << a.id << "\n"
+			<< "  Fitness: " << a.fitness << "\n";
+	}
 
 private:
 	Neat& neat;

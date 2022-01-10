@@ -1,4 +1,5 @@
 #include "NodeGene.h"
+#include <ostream>
 
 NodeGene::NodeGene(unsigned int _inn)
 	:NodeGene(_inn,0)
@@ -16,9 +17,4 @@ NodeGene::NodeGene(unsigned int _inn, double _layer, unsigned int _in, unsigned 
 	in(_in),
 	out(_out)
 {
-}
-
-bool NodeGene::isEqual(NodeGene other)
-{
-	return inn = other.getInnNum();
 }

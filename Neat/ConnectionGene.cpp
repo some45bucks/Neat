@@ -18,8 +18,3 @@ ConnectionGene::ConnectionGene(unsigned int _inn, double _weight, unsigned int _
 	enabled(true)
 {
 }
-
-bool ConnectionGene::isEqual(ConnectionGene other)
-{
-	return inn == other.getInnNum();
-}

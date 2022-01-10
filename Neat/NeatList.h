@@ -137,10 +137,15 @@ inline auto NeatList<T>::end()
 template<typename T>
 inline void NeatList<T>::print()
 {
-	std::cout << "[";
+	std::cout << " [";
 	for (auto element: *list) 
 	{
-		std::cout << element << " ";
+		std::cout << "" << element << " ";
 	}
-	std::cout << "]\n";
+	std::cout << " ]\n";
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& strm, NeatList<T>& a) {
+	return strm << "Size: " << a.size();
 }
