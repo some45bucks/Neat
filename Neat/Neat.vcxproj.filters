@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="NeatProject">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="NeatProject\Simulation">
+      <UniqueIdentifier>{20817a4f-ff49-44f5-8561-361482e64089}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NeatProject\Neat">
+      <UniqueIdentifier>{da788b45-060b-4105-92a4-01cd284b1fa9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NeatProject\Neat\Genome">
+      <UniqueIdentifier>{94feacaf-f9a9-4f26-8480-25dd908b4039}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NeatProject\Neat\NodeGene">
+      <UniqueIdentifier>{e68d090e-8ac1-4041-85c6-bd926a7366e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NeatProject\Neat\ConnectionGene">
+      <UniqueIdentifier>{0e9bbfa3-644c-4b08-a427-f073d514465e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NeatProject\Neat\Species">
+      <UniqueIdentifier>{26a29419-eb16-4974-915f-55056642b9f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NeatProject\Neat\NeatNetwork">
+      <UniqueIdentifier>{5f10d161-55b9-431d-8abc-a34805438907}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NeatProject\Neat\DataHelpers">
+      <UniqueIdentifier>{ba567ce3-8b3d-4c42-8360-64d535eae470}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NeatProject\Neat\DataHelpers\NeatRandom">
+      <UniqueIdentifier>{4cd7500e-1d97-413d-9655-b266ad93bac3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NeatProject\Neat\DataHelpers\NeatList">
+      <UniqueIdentifier>{59963ef9-d78e-44ef-9fe3-a2c80e6b3e14}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Neat.h">
+      <Filter>NeatProject\Neat</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeGene.h">
+      <Filter>NeatProject\Neat\NodeGene</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectionGene.h">
+      <Filter>NeatProject\Neat\ConnectionGene</Filter>
+    </ClInclude>
+    <ClInclude Include="Species.h">
+      <Filter>NeatProject\Neat\Species</Filter>
+    </ClInclude>
+    <ClInclude Include="NeatRandom.h">
+      <Filter>NeatProject\Neat\DataHelpers\NeatRandom</Filter>
+    </ClInclude>
+    <ClInclude Include="NeatList.h">
+      <Filter>NeatProject\Neat\DataHelpers\NeatList</Filter>
+    </ClInclude>
+    <ClInclude Include="Genome.h">
+      <Filter>NeatProject\Neat\Genome</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Neat.cpp">
+      <Filter>NeatProject\Neat</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeGene.cpp">
+      <Filter>NeatProject\Neat\NodeGene</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectionGene.cpp">
+      <Filter>NeatProject\Neat\ConnectionGene</Filter>
+    </ClCompile>
+    <ClCompile Include="Genome.cpp">
+      <Filter>NeatProject\Neat\Genome</Filter>
+    </ClCompile>
+    <ClCompile Include="Species.cpp">
+      <Filter>NeatProject\Neat\Species</Filter>
+    </ClCompile>
+    <ClCompile Include="NeatRandom.cpp">
+      <Filter>NeatProject\Neat\DataHelpers\NeatRandom</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>NeatProject</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
