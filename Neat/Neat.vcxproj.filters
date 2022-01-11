@@ -35,6 +35,9 @@
     <Filter Include="NeatProject\Neat\DataHelpers\NeatList">
       <UniqueIdentifier>{59963ef9-d78e-44ef-9fe3-a2c80e6b3e14}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NeatProject\Neat\NeatNetwork\NeatNode">
+      <UniqueIdentifier>{49099d51-f0ca-4afc-bdfd-f1229e3da861}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Neat.h">
@@ -58,6 +61,12 @@
     <ClInclude Include="Genome.h">
       <Filter>NeatProject\Neat\Genome</Filter>
     </ClInclude>
+    <ClInclude Include="NeatNetwork.h">
+      <Filter>NeatProject\Neat\NeatNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="NeatNode.h">
+      <Filter>NeatProject\Neat\NeatNetwork\NeatNode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Neat.cpp">
@@ -80,6 +89,12 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>NeatProject</Filter>
+    </ClCompile>
+    <ClCompile Include="NeatNetwork.cpp">
+      <Filter>NeatProject\Neat\NeatNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="NeatNode.cpp">
+      <Filter>NeatProject\Neat\NeatNetwork\NeatNode</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

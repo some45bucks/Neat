@@ -143,6 +143,8 @@
     <ClInclude Include="Genome.h" />
     <ClInclude Include="Neat.h" />
     <ClInclude Include="NeatList.h" />
+    <ClInclude Include="NeatNetwork.h" />
+    <ClInclude Include="NeatNode.h" />
     <ClInclude Include="NeatRandom.h" />
     <ClInclude Include="NodeGene.h" />
     <ClInclude Include="Species.h" />
@@ -152,6 +154,8 @@
     <ClCompile Include="Genome.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Neat.cpp" />
+    <ClCompile Include="NeatNetwork.cpp" />
+    <ClCompile Include="NeatNode.cpp" />
     <ClCompile Include="NeatRandom.cpp" />
     <ClCompile Include="NodeGene.cpp" />
     <ClCompile Include="Species.cpp" />

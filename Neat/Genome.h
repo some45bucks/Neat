@@ -27,7 +27,7 @@ public:
 	const std::shared_ptr<Species> getSpecies() { return species; }
 
 	void setFitness(double _fitness) { fitness = _fitness; }
-	const double getFitness() { return fitness; }
+	double& getFitness() { return fitness; }
 	const double getAdjustedFitness();
 
 	const unsigned int getId() { return id; }

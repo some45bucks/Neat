@@ -1,6 +1,7 @@
 #include "Neat.h"
 #include "Genome.h"
 #include "Species.h"
+#include "NeatNetwork.h"
 
 #include <iostream>
 
