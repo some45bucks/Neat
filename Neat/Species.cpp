@@ -65,11 +65,16 @@ void Species::addGenome(std::shared_ptr<Genome> genome)
 	genomes.addObject(genome);
 }
 
-NeatList<unsigned int> Species::cull()
+void Species::cull()
 {
-	//TODO
+	sortByFitness();
 
-	return NeatList<unsigned int>();
+	unsigned int killed = genomes.size() - (genomes.size() / 2);
+
+	for (unsigned int i = 0;i<killed;i++) 
+	{
+		genomes.popEnd();
+	}
 }
 
 unsigned int Species::size()

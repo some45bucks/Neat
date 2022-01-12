@@ -29,8 +29,13 @@ public:
 	void setRandom(std::shared_ptr<NeatRandom> _neatRandom) { neatRandom = _neatRandom; }
 	bool hasRandom();
 
+	void clear();
+
 	auto begin();
 	auto end();
+
+	T& findBasedOn(std::function<bool(T)> f);
+	bool contains(T& t, std::function<bool(T)> f);
 
 	void print();
 
@@ -45,10 +50,36 @@ private:
 };
 
 template<typename T>
+inline void NeatList<T>::clear()
+{
+	list->clear();
+}
+
+template<typename T>
 inline NeatList<T>::NeatList()
 	:list(std::make_shared<List>()),
 	neatRandom(nullptr)
 {
+}
+
+template<typename T>
+inline T& NeatList<T>::findBasedOn(std::function<bool(T)> f)
+{
+	for (T& t: *list) 
+	{
+		if (f(t)) 
+		{
+			return t;
+		}
+	}
+
+	return getObjectAt(0);
+}
+
+template<typename T>
+inline bool NeatList<T>::contains(T& t, std::function<bool(T)> f)
+{
+	return t == findBasedOn(f)
 }
 
 template<typename T>

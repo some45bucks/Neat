@@ -3,6 +3,7 @@
 #include "Species.h"
 #include "NeatNetwork.h"
 
+
 #include <iostream>
 
 Neat::Neat(unsigned int _inputSize, unsigned int _outputSize, unsigned int _numberOfGenomes)
@@ -29,15 +30,8 @@ Neat::Neat(unsigned int _inputSize, unsigned int _outputSize, unsigned int _numb
 	mutateGenomes();
 	speciate();
 
-	/*for (const NodeGene& G : nodeGeneList)
-	{
-		std::cout << G << "\n";
-	}
-
-	for (const ConnectionGene& C : connectionGeneList)
-	{
-		std::cout << C << "\n";
-	}*/
+	speciesList.setRandom(neatRandom);
+	genomeList.setRandom(neatRandom);
 }
 
 ConnectionGene Neat::createOrGetNewConnectionGene(unsigned int from, unsigned int to)
@@ -55,6 +49,18 @@ ConnectionGene Neat::createOrGetNewConnectionGene(unsigned int from, unsigned in
 	connectionGeneList.addObject(newGene);
 
 	return newGene;
+}
+
+std::vector<NeatNetwork> Neat::createNetworks()
+{
+	std::vector<NeatNetwork> networkList = std::vector<NeatNetwork>();
+
+	for (std::shared_ptr<Genome> genome: genomeList) 
+	{
+		networkList.push_back(NeatNetwork(*genome));
+	}
+
+	return networkList;
 }
 
 NodeGene Neat::createOrGetNewNodeGene(unsigned int in, unsigned int out, double layer)
@@ -92,7 +98,7 @@ void Neat::fillGenomeList()
 
 	for (unsigned int i=0;i<numberOfGenomes;i++) 
 	{
-		std::shared_ptr<Genome> newGenome = std::make_shared<Genome>(*this,genomeList.size());
+		std::shared_ptr<Genome> newGenome = std::make_shared<Genome>(*this,gId++);
 
 		for (NodeGene& nodeGene: nodeGeneList)
 		{
@@ -158,9 +164,61 @@ void Neat::mutateEnableDisable(std::shared_ptr<Genome> _genome)
 {
 	if (_genome->getConnectionGeneList().size() > 0)
 	{
-		ConnectionGene& connectionGene = _genome->getConnectionGeneList().getRandomObject();
-		connectionGene.toggleEnabled();
+		_genome->getConnectionGeneList().getRandomObject().toggleEnabled();
 	}
+}
+
+void Neat::cullGenomes()
+{
+	genomeList.clear();
+
+	for (std::shared_ptr<Species> specie: speciesList) 
+	{
+		specie->cull();
+
+		if (specie->size() > 1) 
+		{
+			for (std::shared_ptr<Genome> genome : specie->getGenomes())
+			{
+				genomeList.addObject(genome);
+			}
+		}
+
+		
+	}
+
+	speciesList.sort([](std::shared_ptr<Species> a, std::shared_ptr<Species> b){
+		return a->size() > b->size();
+	});
+
+	while (speciesList.size() > 0 && speciesList[speciesList.size()-1]->size() <= 1) 
+	{
+		speciesList.popEnd();
+	}
+}
+
+void Neat::rePop()
+{
+	while (genomeList.size() < numberOfGenomes)
+	{
+		std::shared_ptr<Species> spec = speciesList.getRandomObject();
+
+		genomeList.addObject(crossOver(spec->getGenomes().getRandomObject(), spec->getGenomes().getRandomObject()));
+	}
+}
+
+void Neat::clearfitness()
+{
+
+}
+
+void Neat::evoStep()
+{
+	cullGenomes();
+	rePop();
+	mutateGenomes();
+	speciate();
+	clearfitness();
 }
 
 void Neat::mutateAddConnection(std::shared_ptr<Genome> _genome)
@@ -246,12 +304,19 @@ void Neat::mutateAddNode(std::shared_ptr<Genome> _genome)
 
 void Neat::speciate()
 {
-	for (std::shared_ptr<Species>& species : speciesList)
+	std::cout << speciesList.size() << "A: ";
+	for(auto sp: speciesList) {
+		std::cout << sp->size() << ", ";
+	}
+	std::cout << "\n";
+
+	for (std::shared_ptr<Species> species : speciesList)
 	{
 		species->getNewRep();
+		species->getGenomes().clear();
 	}
 
-	for (std::shared_ptr<Genome>& genome: genomeList) 
+	for (std::shared_ptr<Genome> genome: genomeList) 
 	{
 		bool foundSpecies = false;
 
@@ -268,14 +333,22 @@ void Neat::speciate()
 
 		if (!foundSpecies) 
 		{
-			std::shared_ptr<Species> newSpecies = std::make_shared<Species>(*this, speciesList.size(), genome);
+			std::shared_ptr<Species> newSpecies = std::make_shared<Species>(*this, sId++, genome);
+			newSpecies->setUpRandom(neatRandom);
 			genome->setSpecies(newSpecies);
+			newSpecies->addGenome(genome);
 			speciesList.addObject(newSpecies);
+
 		}
 		
 	}
 
-	std::cout << speciesList.size() << "\n";
+	std::cout << speciesList.size() << "B: ";
+	for (auto sp : speciesList) {
+		std::cout << sp->size() << ", ";
+	}
+	std::cout << "\n\n";
+	
 }
 
 bool Neat::sameSpecies(std::shared_ptr<Genome> A, std::shared_ptr<Genome> B)
@@ -355,10 +428,62 @@ bool Neat::sameSpecies(std::shared_ptr<Genome> A, std::shared_ptr<Genome> B)
 
 std::shared_ptr<Genome> Neat::crossOver(std::shared_ptr<Genome> A, std::shared_ptr<Genome> B)
 {
-	return A;
+	if (A->getFitness() < B->getFitness())
+	{
+		std::swap(A, B);
+	}
+
+	A->sortByInnNum();
+	B->sortByInnNum();
+
+	unsigned int ANum = 0;
+	unsigned int BNum = 0;
+
+	auto& Alist = A->getConnectionGeneList();
+	auto& Blist = B->getConnectionGeneList();
+
+	auto& Alist2 = A->getNodeGeneList();
+	auto& Blist2 = B->getNodeGeneList();
+
+	std::shared_ptr<Genome> newGenome = std::make_shared<Genome>(*this,gId++);
+
+	while (ANum < Alist.size())
+	{
+		if (BNum < Blist.size() && ANum < Alist.size() && Alist[ANum].getInnNum() == Blist[BNum].getInnNum())
+		{
+			if (neatRandom->getRandomInt(0,1) == 1) 
+			{
+				newGenome->addConnectionGene(Alist[ANum]);
+				newGenome->addNodeGene();
+				newGenome->addNodeGene();
+			}
+			else
+			{
+				newGenome->addConnectionGene(Blist[BNum]);
+				newGenome->addNodeGene();
+				newGenome->addNodeGene();
+			}
+
+			ANum++;
+			BNum++;
+		}
+		else if ((BNum < Blist.size() && (Alist[ANum].getInnNum() > Blist[BNum].getInnNum())))
+		{
+			newGenome->addConnectionGene(Blist[BNum]);
+			newGenome->addNodeGene();
+			newGenome->addNodeGene();
+			BNum++;
+		}
+		else
+		{
+			newGenome->addConnectionGene(Alist[ANum]);
+			newGenome->addNodeGene();
+			newGenome->addNodeGene();
+			ANum++;
+		}
+
+
+	}
 }
 
-void Neat::cullGenomes()
-{
 
-}

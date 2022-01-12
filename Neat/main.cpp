@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "Neat.h"
+#include "NeatNetwork.h"
 
 void NeatRandomTest() 
 {
@@ -55,7 +56,20 @@ void NeatListTest()
 
 void NeatTest() 
 {
-	Neat neat = Neat(3,4,1000);
+	auto gen = std::default_random_engine(90);
+	std::uniform_int_distribution<int> range = std::uniform_int_distribution<>(0, 149);
+	auto x = range(gen);
+
+	Neat neat = Neat(20,20,300,90);
+	Neat::NetworkList list = neat.createNetworks();
+
+	for(int i=0;i<100;i++)
+	{
+		std::cout << i << "\n";
+		neat.evoStep();
+		list = neat.createNetworks();
+	}
+	
 }
 
 void tests() 

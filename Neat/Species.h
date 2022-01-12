@@ -10,6 +10,9 @@ public:
 	Species(Neat& _neat,unsigned int _id);
 	Species(Neat& _neat, unsigned int _id, std::shared_ptr<Genome> _rep);
 
+	NeatList<std::shared_ptr<Genome>>& getGenomes() { return genomes; }
+	unsigned int getId() { return id; }
+
 	double getAverageFitness();
 	std::shared_ptr<Genome> getHighestFitnessGenome();
 
@@ -19,7 +22,9 @@ public:
 
 	void addGenome(std::shared_ptr<Genome> genome);
 
-	NeatList<unsigned int> cull();
+	void setUpRandom(std::shared_ptr<NeatRandom> rand) { genomes.setRandom(rand); }
+
+	void cull();
 
 	unsigned int size();
 

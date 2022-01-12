@@ -5,10 +5,13 @@
 
 class Genome;
 class Species;
+class NeatNetwork;
 
 class Neat
 {
 public:
+	using NetworkList = std::vector<NeatNetwork>;
+
 	Neat(unsigned int _inputSize,unsigned int _outputSize, unsigned int _numberOfGenomes);
 	Neat(unsigned int _inputSize, unsigned int _outputSize, unsigned int _numberOfGenomes, NeatRandom _neatRandom);
 	Neat(unsigned int _inputSize, unsigned int _outputSize, unsigned int _numberOfGenomes, unsigned int seed);
@@ -19,10 +22,12 @@ public:
 	bool sameSpecies(std::shared_ptr<Genome> A, std::shared_ptr<Genome> B);
 	std::shared_ptr<Genome> crossOver(std::shared_ptr<Genome> A, std::shared_ptr<Genome> B);
 	void cullGenomes();
-	//NeatList<NeatNetwork> createNeatNetworks();
+	NetworkList createNetworks();
 	ConnectionGene createOrGetNewConnectionGene(unsigned int from, unsigned int to);
 	NodeGene createOrGetNewNodeGene(unsigned int in, unsigned int out,double layer);
-
+	void evoStep();
+	void rePop();
+	void clearfitness();
 
 	//NeatRandom getNeatRandom() { return neatRandom; }
 
@@ -49,6 +54,9 @@ private:
 	NeatList<ConnectionGene> connectionGeneList;
 	NeatList<std::shared_ptr<Genome>> genomeList;
 	NeatList< std::shared_ptr<Species>> speciesList;
+
+	unsigned int sId = 0;
+	unsigned int gId = 0;
 
 	void mutateAdjustWeight(std::shared_ptr<Genome> _genome);
 	void mutateRandomWeight(std::shared_ptr<Genome> _genome);
