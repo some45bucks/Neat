@@ -191,7 +191,7 @@ void Neat::cullGenomes()
 		return a->size() > b->size();
 	});
 
-	while (speciesList.size() > 0 && speciesList[speciesList.size()-1]->size() <= 1) 
+	while (speciesList.size() > 0 && speciesList[speciesList.size()-1]->size() < 1) 
 	{
 		speciesList.popEnd();
 	}
@@ -199,9 +199,37 @@ void Neat::cullGenomes()
 
 void Neat::rePop()
 {
+	std::vector<std::pair<double, std::shared_ptr<Species>>> holdMap = std::vector<std::pair<double, std::shared_ptr<Species>>>();
+
+	speciesList.sort([](std::shared_ptr<Species> a, std::shared_ptr<Species> b) {
+		return a->getAverageFitness() > b->getAverageFitness();
+	});
+
+	holdMap.push_back(std::pair<double,std::shared_ptr<Species>>(speciesList[0]->getAverageFitness(),speciesList[0]));
+
+	for (auto i=1;i<speciesList.size();i++) 
+	{
+		double newDoub = speciesList[i]->getAverageFitness() + holdMap[i - 1].first;
+
+		holdMap.push_back(std::pair<double, std::shared_ptr<Species>>(newDoub, speciesList[i]));
+	}
+
+	double max = holdMap[speciesList.size() - 1].first;
+
 	while (genomeList.size() < numberOfGenomes)
 	{
+		double randDoub = neatRandom->getRandomDouble(0,max);
+
 		std::shared_ptr<Species> spec = speciesList.getRandomObject();
+
+		for (auto p: holdMap) 
+		{
+			if (randDoub <= p.first) 
+			{
+				spec = p.second;
+				break;
+			}
+		}
 
 		genomeList.addObject(crossOver(spec->getGenomes().getRandomObject(), spec->getGenomes().getRandomObject()));
 	}
@@ -209,7 +237,10 @@ void Neat::rePop()
 
 void Neat::clearfitness()
 {
-
+	for(auto geno: genomeList)
+	{
+		geno->setFitness(0);
+	}
 }
 
 void Neat::evoStep()
@@ -242,21 +273,7 @@ void Neat::mutateAddConnection(std::shared_ptr<Genome> _genome)
 
 	ConnectionGene newGene = createOrGetNewConnectionGene(from,to);
 
-	bool contains = false;
-
-	for (ConnectionGene& connectionGene :_genome->getConnectionGeneList()) 
-	{
-		if (connectionGene.getInnNum() == newGene.getInnNum()) 
-		{
-			contains = true;
-			break;
-		}
-	}
-
-	if (!contains) 
-	{
-		_genome->addConnectionGene(newGene);
-	}
+	_genome->addConnectionGene(newGene);
 }
 
 void Neat::mutateAddNode(std::shared_ptr<Genome> _genome)
@@ -270,23 +287,10 @@ void Neat::mutateAddNode(std::shared_ptr<Genome> _genome)
 
 	double newLayer = (nodeGeneList[midGene.getFrom()].getLayer() + nodeGeneList[midGene.getTo()].getLayer()) / 2;
 
-	NodeGene newGene = createOrGetNewNodeGene(midGene.getFrom(),midGene.getTo(),newLayer);
+	NodeGene newGene = createOrGetNewNodeGene(midGene.getFrom(), midGene.getTo(), newLayer);
 
-	bool contains = false;
-
-	for (NodeGene& nodeGene : _genome->getNodeGeneList())
+	if (_genome->addNodeGene(newGene));
 	{
-		if (nodeGene.getInnNum() == newGene.getInnNum())
-		{
-			contains = true;
-			break;
-		}
-	}
-
-	if (!contains)
-	{
-		_genome->addNodeGene(newGene);
-
 		if (midGene.getEnabled())
 		{
 			midGene.toggleEnabled();
@@ -304,20 +308,19 @@ void Neat::mutateAddNode(std::shared_ptr<Genome> _genome)
 
 void Neat::speciate()
 {
-	std::cout << speciesList.size() << "A: ";
-	for(auto sp: speciesList) {
-		std::cout << sp->size() << ", ";
-	}
-	std::cout << "\n";
-
 	for (std::shared_ptr<Species> species : speciesList)
 	{
 		species->getNewRep();
-		species->getGenomes().clear();
+		//species->getGenomes().clear();
 	}
 
 	for (std::shared_ptr<Genome> genome: genomeList) 
 	{
+		if (genome->getHasSpecies()) 
+		{
+			continue;
+		}
+
 		bool foundSpecies = false;
 
 		for (std::shared_ptr<Species>& species: speciesList) 
@@ -325,7 +328,7 @@ void Neat::speciate()
 			if (sameSpecies(species->getRep(),genome)) 
 			{
 				species->addGenome(genome);
-				genome->setSpecies(species);
+				genome->setHasSpecies(true);
 				foundSpecies = true;
 				break;
 			}
@@ -335,7 +338,7 @@ void Neat::speciate()
 		{
 			std::shared_ptr<Species> newSpecies = std::make_shared<Species>(*this, sId++, genome);
 			newSpecies->setUpRandom(neatRandom);
-			genome->setSpecies(newSpecies);
+			genome->setHasSpecies(true);
 			newSpecies->addGenome(genome);
 			speciesList.addObject(newSpecies);
 
@@ -343,11 +346,14 @@ void Neat::speciate()
 		
 	}
 
-	std::cout << speciesList.size() << "B: ";
+	speciesList.sort([](auto a,auto b) {
+		return a->getId() > b->getId();
+	});
+	std::cout << speciesList.size() << ": ";
 	for (auto sp : speciesList) {
-		std::cout << sp->size() << ", ";
+		std::cout << sp->getId()<< ": " << sp->size() << ", ";
 	}
-	std::cout << "\n\n";
+	std::cout << "\n";
 	
 }
 
@@ -447,21 +453,36 @@ std::shared_ptr<Genome> Neat::crossOver(std::shared_ptr<Genome> A, std::shared_p
 
 	std::shared_ptr<Genome> newGenome = std::make_shared<Genome>(*this,gId++);
 
+	for (auto ioG: nodeGeneList) 
+	{
+		if (ioG.getLayer() == 1 || ioG.getLayer() == 0) 
+		{
+			newGenome->addNodeGene(ioG);
+		}
+	}
+
 	while (ANum < Alist.size())
 	{
 		if (BNum < Blist.size() && ANum < Alist.size() && Alist[ANum].getInnNum() == Blist[BNum].getInnNum())
 		{
 			if (neatRandom->getRandomInt(0,1) == 1) 
 			{
+				unsigned int from = Alist[ANum].getFrom();
+				unsigned int to = Alist[ANum].getTo();
+				newGenome->addNodeGene(nodeGeneList[from]);
+				newGenome->addNodeGene(nodeGeneList[to]);
+
 				newGenome->addConnectionGene(Alist[ANum]);
-				newGenome->addNodeGene();
-				newGenome->addNodeGene();
+				
 			}
 			else
 			{
+				unsigned int from = Blist[BNum].getFrom();
+				unsigned int to = Blist[BNum].getTo();
+				newGenome->addNodeGene(nodeGeneList[from]);
+				newGenome->addNodeGene(nodeGeneList[to]);
+
 				newGenome->addConnectionGene(Blist[BNum]);
-				newGenome->addNodeGene();
-				newGenome->addNodeGene();
 			}
 
 			ANum++;
@@ -469,21 +490,31 @@ std::shared_ptr<Genome> Neat::crossOver(std::shared_ptr<Genome> A, std::shared_p
 		}
 		else if ((BNum < Blist.size() && (Alist[ANum].getInnNum() > Blist[BNum].getInnNum())))
 		{
+			unsigned int from = Blist[BNum].getFrom();
+			unsigned int to = Blist[BNum].getTo();
+			newGenome->addNodeGene(nodeGeneList[from]);
+			newGenome->addNodeGene(nodeGeneList[to]);
+
 			newGenome->addConnectionGene(Blist[BNum]);
-			newGenome->addNodeGene();
-			newGenome->addNodeGene();
+
 			BNum++;
 		}
 		else
 		{
+			unsigned int from = Alist[ANum].getFrom();
+			unsigned int to = Alist[ANum].getTo();
+			newGenome->addNodeGene(nodeGeneList[from]);
+			newGenome->addNodeGene(nodeGeneList[to]);
+
 			newGenome->addConnectionGene(Alist[ANum]);
-			newGenome->addNodeGene();
-			newGenome->addNodeGene();
+
 			ANum++;
 		}
 
-
 	}
+
+	newGenome->setUpRandom(neatRandom);
+	return newGenome;
 }
 
 

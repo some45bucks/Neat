@@ -63,26 +63,6 @@ inline NeatList<T>::NeatList()
 }
 
 template<typename T>
-inline T& NeatList<T>::findBasedOn(std::function<bool(T)> f)
-{
-	for (T& t: *list) 
-	{
-		if (f(t)) 
-		{
-			return t;
-		}
-	}
-
-	return getObjectAt(0);
-}
-
-template<typename T>
-inline bool NeatList<T>::contains(T& t, std::function<bool(T)> f)
-{
-	return t == findBasedOn(f)
-}
-
-template<typename T>
 inline NeatList<T>& NeatList<T>::operator=(const NeatList& other)
 {
 	if (this != &other) 

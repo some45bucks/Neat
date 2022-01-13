@@ -37,7 +37,7 @@ private:
 	unsigned int outputSize;
 	unsigned int numberOfGenomes;
 
-	double GENOME_DISTANCE = 7;
+	double GENOME_DISTANCE = 4;
 	
 	double C1 = 1;
 	double C2 = 1;

@@ -30,10 +30,10 @@ double Species::getAverageFitness()
 
 	for (std::shared_ptr<Genome> G: genomes)
 	{
-		total += G->getAdjustedFitness();
+		total += G->getFitness();
 	}
 
-	return total;
+	return total/(static_cast<double>(size())*size());
 }
 
 void Species::getNewRep()

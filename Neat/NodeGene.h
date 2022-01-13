@@ -8,7 +8,7 @@ public:
 	NodeGene(unsigned int _inn, double _layer);
 	NodeGene(unsigned int _inn, double _layer, unsigned int _in,unsigned int _out);
 
-	const unsigned int getInnNum() { return inn; }
+	unsigned int getInnNum() { return inn; }
 	void setInnNum(unsigned int _inn) { inn = _inn; }
 
 	//double getWeight() { return weight; }

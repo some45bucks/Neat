@@ -8,18 +8,17 @@ class NeatNetwork
 {
 public:
 	NeatNetwork(Genome& genome);
-	NeatNetwork(Genome& genome, std::function<double(double)> f);
 	std::vector<double> NetworkIO(std::vector<double> inputs);
 	void addFitness(double add) { fitness += add; }
 
 private:
-	std::vector<std::reference_wrapper<NeatNode>> inputNodes;
-	std::vector<std::reference_wrapper<NeatNode>> outputNodes;
+	std::vector<std::shared_ptr<NeatNode>> inputNodes;
+	std::vector<std::shared_ptr<NeatNode>> outputNodes;
 	double& fitness;
 	std::function<double(double)> activationFunction;
-	std::map<unsigned int,NeatNode> allNodes;
+	std::map<unsigned int, std::shared_ptr<NeatNode>> allNodes;
 
 
-	void linkNode(NeatNode& node, Genome& genome);
+	void linkNode(std::shared_ptr<NeatNode> node, Genome& genome);
 };
 

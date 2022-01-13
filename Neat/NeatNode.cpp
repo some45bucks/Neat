@@ -1,20 +1,19 @@
 #include "NeatNode.h"
 
-NeatNode::NeatNode(unsigned int _id,std::function<double(double)> f)
-	:weightNodeList(std::vector<std::pair<double, std::reference_wrapper<NeatNode>>>()),
+NeatNode::NeatNode(unsigned int _id)
+	:weightNodeList(std::vector<std::pair<double, std::shared_ptr<NeatNode>>>()),
 	currentTotalVal(0),
 	numberOfFeedIn(0),
 	numberOfActiveFeedIns(0),
-	activationFunction(f),
 	id(_id)
 {
 }
 
-void NeatNode::connectNode(double weight,NeatNode& newNode)
+void NeatNode::connectNode(double weight, std::shared_ptr<NeatNode> newNode)
 {
-	std::pair<double, std::reference_wrapper<NeatNode>> newPair(weight,newNode);
+	std::pair<double, std::shared_ptr<NeatNode>> newPair(weight,newNode);
 	weightNodeList.push_back(newPair);
-	newNode.addFeedIn();
+	newNode->addFeedIn();
 }
 
 void NeatNode::pushAlongData()
@@ -23,8 +22,13 @@ void NeatNode::pushAlongData()
 
 	for(auto& pair: weightNodeList)
 	{
-		pair.second.get().reciveData(pair.first * currentTotalVal);
+		pair.second->reciveData(pair.first * currentTotalVal);
 	}
+}
+
+double NeatNode::activationFunction(double x)
+{
+	return 1 / (1 + (exp(-x)));
 }
 
 void NeatNode::reciveData(double data)

@@ -12,23 +12,22 @@ class Genome
 {
 public:
 	Genome(Neat& _neat,unsigned int _id);
-	Genome(Neat& _neat, unsigned int _id, Species _species);
 	Genome(const Genome& other);
 
 	Genome& operator=(const Genome& other);
 
-	void addConnectionGene(ConnectionGene _connectionGene) { connectionGeneList.addObject(_connectionGene); }
-	void addNodeGene(NodeGene _nodeGene) { nodeGeneList.addObject(_nodeGene); }
+	bool addConnectionGene(ConnectionGene _connectionGene);
+	bool addNodeGene(NodeGene _nodeGene);
 
 	NeatList<ConnectionGene>& getConnectionGeneList() { return connectionGeneList; }
 	NeatList<NodeGene>& getNodeGeneList() {return nodeGeneList;}
 
-	void setSpecies(std::shared_ptr<Species> _species) { species = _species; }
-	const std::shared_ptr<Species> getSpecies() { return species; }
+	void setHasSpecies(bool _species) { hasSpecies = _species; }
+	const bool getHasSpecies() { return hasSpecies; }
 
 	void setFitness(double _fitness) { fitness = _fitness; }
-	double& getFitness() { return fitness; }
-	const double getAdjustedFitness();
+	double& getFitnessRef() { return fitness; }
+	double getFitness() { return fitness / sqrt(static_cast<double>(nodeGeneList.size())); }
 
 	const unsigned int getId() { return id; }
 
@@ -49,6 +48,6 @@ private:
 	NeatList<ConnectionGene> connectionGeneList;
 	NeatList<NodeGene> nodeGeneList;
 	double fitness;
-	std::shared_ptr<Species> species;
+	bool hasSpecies = false;
 };
 

@@ -1,22 +1,14 @@
 #include "NeatNetwork.h"
-
 NeatNetwork::NeatNetwork(Genome& genome)
-	:NeatNetwork(genome, [](double x) {return 1 / (1 + (exp(-x))); })
-{
-
-}
-
-NeatNetwork::NeatNetwork(Genome& genome, std::function<double(double)> f)
-	:inputNodes(std::vector<std::reference_wrapper<NeatNode>>()),
-	outputNodes(std::vector<std::reference_wrapper<NeatNode>>()),
-	fitness(genome.getFitness()),
-	activationFunction(f),
-	allNodes(std::map<unsigned int,NeatNode>())
+	:inputNodes(std::vector<std::shared_ptr<NeatNode>>()),
+	outputNodes(std::vector<std::shared_ptr<NeatNode>>()),
+	fitness(genome.getFitnessRef()),
+	allNodes(std::map<unsigned int, std::shared_ptr<NeatNode>>())
 {
 	genome.sortByInnNum();
-	for (NodeGene& nG:genome.getNodeGeneList()) 
+	for (NodeGene& nG: genome.getNodeGeneList()) 
 	{
-		allNodes[nG.getInnNum()] = (NeatNode(nG.getInnNum(), activationFunction));
+		allNodes[nG.getInnNum()] = std::make_shared<NeatNode>(nG.getInnNum());
 
 		if (nG.getLayer() == 0) 
 		{
@@ -29,19 +21,19 @@ NeatNetwork::NeatNetwork(Genome& genome, std::function<double(double)> f)
 		}
 	}
 
-	for (NeatNode& nN : inputNodes)
+	for (std::shared_ptr<NeatNode> nN : inputNodes)
 	{
 		linkNode(nN,genome);
 	}
 }
 
-void NeatNetwork::linkNode(NeatNode& node, Genome& genome)
+void NeatNetwork::linkNode(std::shared_ptr<NeatNode> node, Genome& genome)
 {
 	for (ConnectionGene& cG : genome.getConnectionGeneList())
 	{
-		if (cG.getEnabled() && cG.getFrom() == node.getId()) 
+		if (cG.getEnabled() && cG.getFrom() == node->getId()) 
 		{
-			node.connectNode(cG.getWeight(), allNodes[cG.getTo()]);
+			node->connectNode(cG.getWeight(), allNodes[cG.getTo()]);
 			linkNode(allNodes[cG.getTo()],genome);
 		}
 	}
@@ -51,19 +43,19 @@ std::vector<double> NeatNetwork::NetworkIO(std::vector<double> inputs)
 {
 	for (decltype(inputs.size()) i=0;i<inputs.size();i++) 
 	{
-		inputNodes[i].get().setData(inputs[i]);
+		inputNodes[i]->setData(inputs[i]);
 	}
 
-	for (NeatNode& node : inputNodes)
+	for (std::shared_ptr<NeatNode> node : inputNodes)
 	{
-		node.pushAlongData();
+		node->pushAlongData();
 	}
 
 	std::vector<double> output = std::vector<double>();
 
-	for(NeatNode& node: outputNodes)
+	for(std::shared_ptr<NeatNode> node: outputNodes)
 	{
-		output.push_back(node.getData());
+		output.push_back(node->getData());
 	}
 
 	return output;

@@ -5,18 +5,7 @@ Genome::Genome(Neat& _neat,unsigned int _id)
 	id(_id),
 	connectionGeneList(NeatList<ConnectionGene>()),
 	nodeGeneList(NeatList<NodeGene>()),
-	fitness(0),
-	species(nullptr)
-{
-}
-
-Genome::Genome(Neat& _neat, unsigned int _id, Species _species)
-	:neat(_neat),
-	id(_id),
-	connectionGeneList(NeatList<ConnectionGene>()),
-	nodeGeneList(NeatList<NodeGene>()),
-	fitness(0),
-	species(std::make_shared<Species>(_species) )
+	fitness(0)
 {
 }
 
@@ -29,8 +18,50 @@ Genome::Genome(const Genome& other)
 	{
 		connectionGeneList = other.connectionGeneList;
 		nodeGeneList = other.nodeGeneList;
-		species = other.species;
+		hasSpecies = other.hasSpecies;
 	}
+}
+
+bool Genome::addNodeGene(NodeGene _nodeGene)
+{
+	bool good = true;
+
+	for (auto nG: nodeGeneList) 
+	{
+		if (nG.getInnNum() == _nodeGene.getInnNum()) 
+		{
+			good = false;
+			break;
+		}
+	}
+
+	if (good) 
+	{
+		nodeGeneList.addObject(_nodeGene);
+	}
+
+	return good;
+}
+
+bool Genome::addConnectionGene(ConnectionGene _connectionGene)
+{
+	bool good = true;
+
+	for (auto nG : connectionGeneList)
+	{
+		if (nG.getInnNum() == _connectionGene.getInnNum())
+		{
+			good = false;
+			break;
+		}
+	}
+
+	if (good)
+	{
+		connectionGeneList.addObject(_connectionGene);
+	}
+
+	return good;
 }
 
 Genome& Genome::operator=(const Genome& other)
@@ -42,7 +73,7 @@ Genome& Genome::operator=(const Genome& other)
 		connectionGeneList = other.connectionGeneList;
 		nodeGeneList = other.nodeGeneList;
 		fitness = other.fitness;
-		species = other.species;
+		hasSpecies = other.hasSpecies;
 	}
 
 	return *this;
@@ -52,11 +83,6 @@ void Genome::setUpRandom(std::shared_ptr<NeatRandom> neatRandom)
 {
 	nodeGeneList.setRandom(neatRandom);
 	connectionGeneList.setRandom(neatRandom);
-}
-
-const double Genome::getAdjustedFitness()
-{
-	return fitness/species->size();
 }
 
 void Genome::sortByInnNum()

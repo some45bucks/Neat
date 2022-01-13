@@ -56,11 +56,8 @@ void NeatListTest()
 
 void NeatTest() 
 {
-	auto gen = std::default_random_engine(90);
-	std::uniform_int_distribution<int> range = std::uniform_int_distribution<>(0, 149);
-	auto x = range(gen);
-
-	Neat neat = Neat(20,20,300,90);
+	unsigned int numi = 300;
+	Neat neat = Neat(5,4,numi);
 	Neat::NetworkList list = neat.createNetworks();
 
 	for(int i=0;i<100;i++)
@@ -68,6 +65,17 @@ void NeatTest()
 		std::cout << i << "\n";
 		neat.evoStep();
 		list = neat.createNetworks();
+		
+		double tot = 0;
+
+		for (auto net : list)
+		{
+			std::vector<double> num = net.NetworkIO({ 0,0,0,0,0 });
+			tot += (num[0]-num[1] * num[2]);
+			net.addFitness((num[0] - num[1] * num[2]));
+		}
+
+		std::cout << tot / numi << "\n";
 	}
 	
 }
