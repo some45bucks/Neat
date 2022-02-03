@@ -3,8 +3,9 @@
 #include "Species.h"
 #include "NeatNetwork.h"
 
-
+#include <string>
 #include <iostream>
+#include <fstream>
 
 Neat::Neat(unsigned int _inputSize, unsigned int _outputSize, unsigned int _numberOfGenomes)
 	:Neat(_inputSize,_outputSize,_numberOfGenomes,0)
@@ -517,4 +518,48 @@ std::shared_ptr<Genome> Neat::crossOver(std::shared_ptr<Genome> A, std::shared_p
 	return newGenome;
 }
 
+void Neat::save(std::string location)
+{
+	std::ofstream myfile;
+	unsigned int check = 0;
+	while(fileExists(location+"save"+ std::to_string(check) + ".txt"))
+	{
+		check++;
+	}
 
+	myfile.open(location + "save" + std::to_string(check) + ".txt");
+
+	for (auto nG: nodeGeneList) 
+	{
+		myfile << "N[" << nG.getInnNum() << "," << nG.getLayer() << "," << nG.getIn() << "," << nG.getOut() << "] ";
+	}
+
+	for (auto cG : connectionGeneList)
+	{
+		myfile << "C[" << cG.getInnNum() << "," << cG.getWeight() << "," << cG.getFrom() << "," << cG.getTo() << "," << cG.getEnabled() << "] ";
+	}
+
+	for (auto G : genomeList)
+	{
+		myfile << "G[" << G->getId() << ",";
+
+		for (ConnectionGene& cg: G->getConnectionGeneList()) 
+		{
+			myfile << cg.getInnNum() << ",";
+		}
+
+		myfile << "]";
+	}
+
+	for (auto S : speciesList) 
+	{
+		//TODO
+	}
+
+	myfile.close();
+}
+
+bool Neat::fileExists(const std::string& name) {
+	std::ifstream f(name.c_str());
+	return f.good();
+}

@@ -59,7 +59,7 @@ void NeatTest()
 	unsigned int numi = 300;
 	Neat neat = Neat(5,4,numi);
 	Neat::NetworkList list = neat.createNetworks();
-
+	neat.save("save/");
 	for(int i=0;i<100;i++)
 	{
 		std::cout << i << "\n";
@@ -77,7 +77,7 @@ void NeatTest()
 
 		std::cout << tot / numi << "\n";
 	}
-	
+	neat.save("save/");
 }
 
 void tests() 
@@ -89,6 +89,7 @@ void tests()
 
 int main() 
 {
+	
 	tests();
 
 	return 0;

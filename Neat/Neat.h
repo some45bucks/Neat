@@ -28,6 +28,8 @@ public:
 	void evoStep();
 	void rePop();
 	void clearfitness();
+	void save(std::string location);
+
 
 	//NeatRandom getNeatRandom() { return neatRandom; }
 
@@ -64,5 +66,5 @@ private:
 	void mutateAddConnection(std::shared_ptr<Genome> _genome);
 	void mutateAddNode(std::shared_ptr<Genome> _genome);
 
-	
+	bool fileExists(const std::string& name);
 };
